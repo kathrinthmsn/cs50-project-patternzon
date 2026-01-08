@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+{% block title %}{{ p.title }}{% endblock %}
+{% block content %}
+
+<div class="container-narrow text-center">
+  <h1 class="mb-2">{{ p.title }}</h1>
+
+  {# rating + count #}
+  {% set pct = (rating_avg / 5.0) * 100 %}
+  <div class="d-flex justify-content-center mb-2">
+    <a href="#rate" class="d-inline-flex align-items-center text-decoration-none text-reset"
+       aria-label="Rate this pattern">
+      <div class="stars me-2" aria-hidden="true">
+        <div class="stars-bg">★★★★★</div>
+        <div class="stars-fill" style="width: {{ '%.0f' % pct }}%;">★★★★★</div>
+      </div>
+      <small class="text-muted">{{ '%.1f' % rating_avg }} ({{ rating_count }})</small>
+    </a>
+  </div>
+
+  {% if current_user.is_authenticated %}
+  <form method="post" action="{{ url_for('favorite_pattern', pattern_id=p.id) }}" class="d-inline-block mb-3">
+    <button class="btn btn-sm {% if p in current_user.favorites %}btn-danger{% else %}btn-outline-danger{% endif %}">
+      {% if p in current_user.favorites %}♥ Favorited{% else %}♡ Favorite{% endif %}
+    </button>
+  </form>
+  {% endif %}
+
+  {% if p.image_path %}
+  <img src="{{ url_for('uploaded_file', filename=p.image_path) }}"
+       alt="Pattern image"
+       class="img-fluid rounded mb-3 d-block mx-auto"
+       style="max-height:420px; object-fit:cover;">
+  {% endif %}
+
+  <p>
+    <span class="badge bg-primary">{{ p.craft }}</span>
+    {% if p.difficulty %}<span class="badge bg-secondary">{{ p.difficulty }}</span>{% endif %}
+    <span class="text-muted ms-2">by {{ p.author.username }}</span>
+  </p>
+
+  <hr>
+
+  <div class="pattern-text">
+    <pre class="pattern-pre">{{ p.instructions_md }}</pre>
+  </div>
+
+  {% if people_also_liked %}
+
+  <hr>
+  <h3 class="mt-4">People also liked</h3>
+  <div class="row justify-content-center">
+    {% for s in people_also_liked %}
+      <div class="col-6 col-md-4 col-lg-3 mb-3">
+        <a class="text-decoration-none" href="{{ url_for('pattern_detail', pattern_id=s.id) }}">
+          <div class="card glass-card h-100">
+            {% if s.image_path %}
+              <img src="{{ url_for('uploaded_file', filename=s.image_path) }}" class="card-img-top" alt="">
+            {% endif %}
+            <div class="card-body">
+              <h6 class="card-title mb-1 text-truncate">{{ s.title }}</h6>
+              <span class="badge bg-primary">{{ s.craft }}</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <hr>
+  <h3 id="rate" class="h5">Rate this pattern</h3>
+
+  {% if current_user.is_authenticated %}
+  <form method="post" action="{{ url_for('rate_pattern', pattern_id=p.id) }}" class="mb-3">
+    <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap">
+      <div class="star-input me-2">
+        {% for val in [5,4,3,2,1] %}
+          <input type="radio" id="rate{{ val }}" name="rating" value="{{ val }}" {% if my_rating==val %}checked{% endif %}>
+          <label for="rate{{ val }}" title="{{ val }} star{{ '' if val==1 else 's' }}">★</label>
+        {% endfor %}
+      </div>
+      <button class="btn btn-yarn btn-sm">Submit rating</button>
+    </div>
+  </form>
+  {% else %}
+  <p class="text-muted">Log in to rate this pattern.</p>
+  {% endif %}
+
+  <a class="btn btn-link" href="{{ url_for('index') }}">← Back</a>
+</div>
+
+{% endblock %}

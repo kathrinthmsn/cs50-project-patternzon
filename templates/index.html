@@ -1,0 +1,108 @@
+{% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+{% block body_class %}home-page{% endblock %}
+
+{% block content %}
+
+  <section class="text-center mb-4">
+    <h1 class="display-5 fw-semibold text-white text-shadow">Discover your next pattern</h1>
+    <form method="get" action="{{ url_for('patterns_browse') }}" class="d-inline-block" style="max-width:600px; width:100%;">
+      <div class="input-group mt-3">
+        <input type="text" class="form-control" name="q" placeholder="Search patterns">
+        <button class="btn btn-yarn" type="submit">Search</button>
+      </div>
+    </form>
+  </section>
+
+  {% macro pattern_card(p) -%}
+  <div class="card h-100 shadow-sm glass-card position-relative">
+    {% if p.image_path %}
+      <img src="{{ url_for('uploaded_file', filename=p.image_path) }}" class="card-img-top" alt="{{ p.title }}" style="object-fit:cover; height: 160px;">
+    {% endif %}
+    <div class="card-body">
+      <h6 class="card-title mb-1 text-truncate">{{ p.title }}</h6>
+      <div class="small text-muted mb-2">
+        <span class="badge bg-primary text-uppercase">{{ p.craft }}</span>
+        {% if p.difficulty %}<span class="badge bg-secondary ms-1">{{ p.difficulty }}</span>{% endif %}
+      </div>
+
+      <a class="stretched-link" href="{{ url_for('pattern_detail', pattern_id=p.id) }}" aria-label="View {{ p.title }}"></a>
+    </div>
+  </div>
+  {%- endmacro %}
+
+  {% if trending %}
+  <section class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h2 class="h5 text-white text-shadow m-0">Trending now</h2>
+      <a class="link-light" href="{{ url_for('patterns_browse') }}">Browse all →</a>
+    </div>
+    <div class="row g-3">
+      {% for p in trending %}
+        <div class="col-6 col-md-3 col-lg-3">{{ pattern_card(p) }}</div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h2 class="h5 text-white text-shadow m-0">New & noteworthy</h2>
+      <a class="link-light" href="{{ url_for('patterns_browse', sort='new') }}">See new →</a>
+    </div>
+    <div class="row g-3">
+      {% for p in new_items %}
+        <div class="col-6 col-md-3 col-lg-3">{{ pattern_card(p) }}</div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% if current_user.is_authenticated and for_you %}
+  <section class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h2 class="h5 text-white text-shadow m-0">For you</h2>
+      <a class="link-light" href="{{ url_for('favorites_page') }}">Your favorites →</a>
+    </div>
+    <div class="row g-3">
+      {% for p in for_you %}
+        <div class="col-6 col-md-3 col-lg-3">{{ pattern_card(p) }}</div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="mb-2">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h2 class="h6 text-white text-shadow m-0">Knitting</h2>
+          <a class="link-light" href="{{ url_for('patterns_browse', craft='knit') }}">More →</a>
+        </div>
+        <div class="row g-3">
+          {% for p in knit_teaser %}
+            <div class="col-6 col-lg-4">{{ pattern_card(p) }}</div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h2 class="h6 text-white text-shadow m-0">Crochet</h2>
+          <a class="link-light" href="{{ url_for('patterns_browse', craft='crochet') }}">More →</a>
+        </div>
+        <div class="row g-3">
+          {% for p in crochet_teaser %}
+            <div class="col-6 col-lg-4">{{ pattern_card(p) }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% if current_user.is_authenticated %}
+  <div class="text-center mt-4">
+    <a class="btn btn-yarn" href="{{ url_for('new_pattern') }}">+ Add your pattern</a>
+  </div>
+  {% endif %}
+
+{% endblock %}

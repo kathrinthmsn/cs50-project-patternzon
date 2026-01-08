@@ -1,0 +1,140 @@
+{% extends "layout.html" %}
+{% block title %}Patterns{% endblock %}
+{% block body_class %}bg-nav-darker{% endblock %} 
+{% block content %}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h2 class="mb-0">
+    {% if craft == 'knit' %}Knitting Patterns{% elif craft == 'crochet' %}Crochet Patterns{% else %}All Patterns{% endif %}
+  </h2>
+</div>
+
+<form id="filtersForm" method="get" action="{{ url_for('patterns_browse') }}" class="row gy-2 gx-2 align-items-end mb-4">
+  <div class="col-md-4">
+    <label class="form-label mb-1">Search</label>
+    <div class="input-group">
+      <input type="text" class="form-control" name="q" value="{{ q or '' }}">
+      <button type="submit" class="btn btn-yarn">Search</button>
+    </div>
+  </div>
+
+  <div class="col-md-2">
+    <label class="form-label mb-1">Craft</label>
+    <select class="form-select" name="craft">
+      <option value="" {{ ''==craft and 'selected' or '' }}>All</option>
+      <option value="knit" {{ craft=='knit' and 'selected' or '' }}>Knitting</option>
+      <option value="crochet" {{ craft=='crochet' and 'selected' or '' }}>Crochet</option>
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <label class="form-label mb-1">Difficulty</label>
+    <select class="form-select" name="difficulty">
+      {% set diffs = ['', 'beginner','easy','intermediate','advanced'] %}
+      {% set labels = {'':'All','beginner':'Beginner','easy':'Easy','intermediate':'Intermediate','advanced':'Advanced'} %}
+      {% for d in diffs %}
+        <option value="{{ d }}" {{ d==difficulty and 'selected' or '' }}>{{ labels[d] }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <label class="form-label mb-1">Sort</label>
+    <select class="form-select" name="sort">
+      <option value="new" {{ sort=='new' and 'selected' or '' }}>Newest</option>
+      <option value="old" {{ sort=='old' and 'selected' or '' }}>Oldest</option>
+      <option value="az"  {{ sort=='az'  and 'selected' or '' }}>A–Z</option>
+      <option value="za"  {{ sort=='za'  and 'selected' or '' }}>Z–A</option>
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <div class="d-flex align-items-end justify-content-between">
+      {% if current_user.is_authenticated %}
+      <div class="form-check mb-0">
+        <input class="form-check-input" type="checkbox" value="1" name="only_fav" id="only_fav" {{ only_fav and 'checked' or '' }}>
+        <label class="form-check-label" for="only_fav">Favorites</label>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</form>
+
+<script>
+(function () {
+  const form = document.getElementById('filtersForm');
+  if (!form) return;
+  form.querySelectorAll('select, input[type="checkbox"]').forEach(el => {
+    el.addEventListener('change', () => form.requestSubmit());
+  });
+})();
+</script>
+
+{% if patterns %}
+  <div class="row">
+    {% for p in patterns %}
+      <div class="col-lg-4 col-md-4 mb-4">
+        <div class="card h-100 shadow-sm glass-card position-relative">
+          <div class="row g-0 h-100">
+            {% if p.image_path %}
+              <div class="col-6">
+                <img src="{{ url_for('uploaded_file', filename=p.image_path) }}"
+                     alt="{{ p.title }}"
+                     class="img-fluid rounded-start w-100 h-100"
+                     style="object-fit: cover;"
+                     loading="lazy">
+              </div>
+              <div class="col-6">
+            {% else %}
+              <div class="col-12">
+            {% endif %}
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title mb-2 text-truncate">{{ p.title }}</h5>
+
+                  {% if rating_stats %}
+                    {% set avg = (rating_stats.get(p.id, (0.0, 0))[0]) %}
+                    {% set cnt = (rating_stats.get(p.id, (0.0, 0))[1]) %}
+                    {% set pct = (avg / 5.0) * 100 %}
+                    <div class="d-flex align-items-center mb-2">
+                      <div class="stars me-2 ms-1">
+                        <div class="stars-bg">★★★★★</div>
+                        <div class="stars-fill" style="width: {{ '%.0f' % pct }}%;">★★★★★</div>
+                      </div>
+                      <small class="text-muted">{{ '%.1f' % avg }} ({{ cnt }})</small>
+                    </div>
+                  {% endif %}
+
+                  <p class="card-text mb-3">
+                    <span class="badge bg-primary text-uppercase">{{ p.craft }}</span>
+                    {% if p.difficulty %}<span class="badge bg-secondary">{{ p.difficulty }}</span>{% endif %}
+                    <small class="text-muted d-block mt-2">by {{ p.author.username }}</small>
+                  </p>
+
+                  <div class="mt-auto">
+                    {% if current_user.is_authenticated %}
+                      <form method="post"
+                            action="{{ url_for('favorite_pattern', pattern_id=p.id) }}"
+                            class="d-inline position-relative z-3">
+                        <button class="btn btn-sm {% if p in current_user.favorites %}btn-danger{% else %}btn-outline-danger{% endif %}">
+                          {% if p in current_user.favorites %}♥ Favorited{% else %}♡ Favorite{% endif %}
+                        </button>
+                      </form>
+                    {% endif %}
+                  </div>
+
+                  {# Make the whole card clickable #}
+                  <a class="stretched-link"
+                     href="{{ url_for('pattern_detail', pattern_id=p.id) }}"
+                     aria-label="View {{ p.title }}"></a>
+                </div>
+              </div> {# /.col (content) #}
+          </div> {# /.row inside card #}
+        </div> {# /.card #}
+      </div> {# /.col grid #}
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-center text-muted">No patterns found.</p>
+{% endif %}
+
+{% endblock %}
