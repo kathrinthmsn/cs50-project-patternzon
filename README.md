@@ -1,5 +1,4 @@
 # Patternzon
-#### Video Demo: https://youtu.be/Qx5cPo-0eAc
 #### Description:
 
 ## Patternzon - a marketplace for knitting & crochet patterns
