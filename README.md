@@ -3,7 +3,7 @@
 
 ## Patternzon - a marketplace for knitting & crochet patterns
 
-Users can discover, upload, and review knitting and crochet patterns. You can browse by craft or difficulty, search by keyword, see what's trending, and check out ratings. It's built with Flask, SQLAlchemy, and Bootstrap 5.
+Users can discover, upload and review knitting and crochet patterns. You can browse by craft or difficulty, search by keyword, see what's trending and check out ratings. It's built with Flask, SQLAlchemy, and Bootstrap 5.
 
 
 ### Features
@@ -12,11 +12,11 @@ Users can discover, upload, and review knitting and crochet patterns. You can br
 
 - **Upload patterns:** title, craft (knit/crochet), optional difficulty, instructions (Markdown text allowed) and an optional image upload.
 
-- **Browse & search:** filter by craft, difficulty; search by title or instructions; sort (newest/oldest/A–Z/Z–A); optional “favorites only” filter when logged in.
+- **Browse & search:** filter by craft and difficulty, search by title or instructions, sort (newest/oldest/A–Z/Z–A), optional “favorites only” filter when logged in.
 
-- **Favorites:** heart/undo-heart patterns; a Favorites page.
+- **Favorites:** heart/undo-heart patterns, a Favorites page.
 
-- **Ratings & reviews:** 1–5 star rating per user per pattern; average rating displayed with a “filled stars” bar; submit form at the bottom of the detail page.
+- **Ratings & reviews:** 1–5 star rating per user per pattern, average rating displayed with a “filled stars” bar, submit form at the bottom of the detail page.
 
 - **“People also liked”:** simple collaborative filtering based on overlapping favorites with other users who favorited the current pattern.
 
@@ -117,6 +117,6 @@ On a pattern’s detail page:
 
 - SQLite is ideal for CS50, can later swap to Postgres.
 - Server-rendered Jinja2 templates for simplicity.
-- Images stored in `instance/uploads/` with strict allowed extensions (max 4MB).
+- Images stored in `instance/uploads/` with strict allowed extensions (max 4MB), can later swap for cloud storage such as Amazon S3 without changing the frontend.
 - Ratings are numeric only, text reviews could be added later.
-- Instructions stored raw, for production it would first be converted to HTML so users can’t inject malicious code
+- Instructions stored raw, for production it would first be converted to HTML so users can’t inject malicious code.
