@@ -31,11 +31,11 @@ Users can discover, upload and review knitting and crochet patterns with options
 
 #### `app.py`
 
-`create_app()` configures Flask, SQLAlchemy, and Flask-Login, ensures `instance/` and `instance/uploads/` exist, creates the SQLite DB
+`create_app()` configures Flask, SQLAlchemy and Flask-Login, ensures `instance/` and `instance/uploads/` exist, creates the SQLite DB
 
 **Routes:**
 
-- `/` — Homepage with search bar and sections: Trending , New & noteworthy, For you and knit/crochet examples.
+- `/` : Homepage with search bar and sections: Trending , New & noteworthy, For you and knit/crochet examples.
 
 - `/register`, `/login`, `/logout` : authentication
 
