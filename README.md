@@ -3,7 +3,7 @@
 
 ## Patternzon - a marketplace for knitting & crochet patterns
 
-Users can discover, upload and review knitting and crochet patterns. You can browse by craft or difficulty, search by keyword, see what's trending and check out ratings. It's built with Flask, SQLAlchemy, and Bootstrap 5.
+Users can discover, upload and review knitting and crochet patterns with options to filter by craft or difficulty, search by keyword, view trending patterns and see ratings. It's built with Flask, SQLAlchemy, and Bootstrap 5.
 
 
 ### Features
